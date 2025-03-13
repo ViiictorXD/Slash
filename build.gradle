@@ -1,0 +1,17 @@
+plugins {
+    id 'java'
+}
+
+group = 'com.github.viiictorxd'
+version = '1.0.0-SNAPSHOT'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    implementation(libs.discord)
+
+    compileOnly(libs.lombok)
+    annotationProcessor(libs.lombok)
+}

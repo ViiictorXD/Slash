@@ -1,0 +1,7 @@
+[versions]
+discord = "5.3.0"
+lombok = "1.18.30"
+
+[libraries]
+discord = { module = "net.dv8tion:JDA", version.ref = "discord" }
+lombok = { module = "org.projectlombok:lombok", version.ref = "lombok" }
