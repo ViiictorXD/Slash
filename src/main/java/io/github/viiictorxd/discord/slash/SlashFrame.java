@@ -85,8 +85,6 @@ public class SlashFrame {
           action.queue(command -> slashMap.registerSlashData(command.getName(), slashData));
         }
       }
-
-      System.out.println("registered? " + slash.name());
     }
   }
 
