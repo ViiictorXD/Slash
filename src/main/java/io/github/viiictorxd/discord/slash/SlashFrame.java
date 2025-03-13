@@ -1,5 +1,6 @@
 package io.github.viiictorxd.discord.slash;
 
+import io.github.viiictorxd.discord.slash.adapter.TypeAdapter;
 import io.github.viiictorxd.discord.slash.adapter.discord.*;
 import io.github.viiictorxd.discord.slash.adapter.primitives.*;
 import io.github.viiictorxd.discord.slash.annotation.Slash;
@@ -90,6 +91,10 @@ public class SlashFrame {
 
   public void registerSlashes(Object... objects) {
     Arrays.stream(objects).forEach(this::registerSlash);
+  }
+
+  public void registerTypeAdapter(Class<?> clazz, TypeAdapter<?> adapter) {
+    slashAdapter.registerTypeAdapter(clazz, adapter);
   }
 
   public void registerDefaultTypeAdapters() {
