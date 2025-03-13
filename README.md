@@ -89,7 +89,8 @@ public void handleHello(@Sender SlashContext context, @Data(name = "cargo daora"
 }
 ```
 
-Neste exemplo, o comando `hello` aceita um argumento chamado `cargo daora`, que é um tipo `Role`. Caso o cargo não seja encontrado, o comando responde com "Ops... cargo não encontrado.". Caso o cargo seja válido, ele retorna uma mensagem com o nome do cargo.
+Neste exemplo, o comando `hello` aceita um argumento chamado `cargo daora`, que é um tipo `Role`. Caso o cargo não seja encontrado, o comando responde com "Ops... cargo não encontrado.". Caso o cargo seja válido, ele retorna uma mensagem com o nome do cargo. <br><br>
+Caso queira um exemplo prático, veja [aqui](https://github.com/ViiictorXD/Slash/blob/main/src/test/java/io/github/viiictorxd/discord/slash/command/TestCommand.java)
 
 ## Criando um Custom Adapter
 
