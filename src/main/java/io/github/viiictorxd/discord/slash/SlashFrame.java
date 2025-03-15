@@ -5,6 +5,7 @@ import io.github.viiictorxd.discord.slash.adapter.discord.*;
 import io.github.viiictorxd.discord.slash.adapter.primitives.*;
 import io.github.viiictorxd.discord.slash.annotation.Slash;
 import io.github.viiictorxd.discord.slash.exception.SlashAlreadyRegisteredException;
+import io.github.viiictorxd.discord.slash.message.SlashMessageHolder;
 import lombok.Getter;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.*;
@@ -28,6 +29,7 @@ public class SlashFrame {
   private final SlashAdapter slashAdapter;
 
   private final SlashResolver slashResolver;
+  private final SlashMessageHolder slashMessageHolder;
 
   public SlashFrame(JDA jda) {
     this.jda = jda;
@@ -39,11 +41,15 @@ public class SlashFrame {
     /* Registering default type adapters */
     registerDefaultTypeAdapters();
 
+    this.slashMessageHolder = new SlashMessageHolder();
+    /* Registering default message holder */
+    registerDefaultMessageHolder();
+
     this.init();
   }
 
   private void init() {
-    jda.addEventListener(new SlashListener(slashMap, slashResolver));
+    jda.addEventListener(new SlashListener(slashMap, slashResolver, slashMessageHolder));
 
     for (Guild guild : jda.getGuilds()) {
       CommandListUpdateAction commandListUpdateAction = guild.updateCommands();
@@ -118,5 +124,9 @@ public class SlashFrame {
     slashAdapter.registerTypeAdapter(Double.class, new DoubleTypeAdapter());
     slashAdapter.registerTypeAdapter(double.class, new DoubleTypeAdapter());
     slashAdapter.registerTypeAdapter(String.class, new StringTypeAdapter());
+  }
+
+  private void registerDefaultMessageHolder() {
+    slashMessageHolder.put(SlashMessageHolder.Type.NO_PERMISSION, event -> event.reply(":x: Sem permissão.").queue());
   }
 }
