@@ -12,7 +12,6 @@ import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.entities.channel.Channel;
 import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 import net.dv8tion.jda.api.requests.restaction.CommandCreateAction;
-import net.dv8tion.jda.api.requests.restaction.CommandListUpdateAction;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -50,11 +49,6 @@ public class SlashFrame {
 
   private void init() {
     jda.addEventListener(new SlashListener(slashMap, slashResolver, slashMessageHolder));
-
-    for (Guild guild : jda.getGuilds()) {
-      CommandListUpdateAction commandListUpdateAction = guild.updateCommands();
-      commandListUpdateAction.queue();
-    }
   }
 
   @SuppressWarnings("all")
@@ -74,23 +68,19 @@ public class SlashFrame {
 
       SlashData slashData = SlashData.of(slash, method, object);
 
-      for (Guild guild : jda.getGuilds()) {
-        List<SlashArgument> slashArguments = slashResolver.resolveArgument(slashData);
+      List<SlashArgument> slashArguments = slashResolver.resolveArgument(slashData);
 
-        List<OptionData> optionData = slashArguments.stream()
-         .map(SlashArgument::getData)
-         .collect(Collectors.toList());
+      List<OptionData> optionData = slashArguments.stream()
+       .map(SlashArgument::getData)
+       .collect(Collectors.toList());
 
-        List<CommandCreateAction> actions = new ArrayList<>(slash.alias().length + 1);
-        actions.add(guild.upsertCommand(slash.name(), slash.description()).addOptions(optionData));
+      List<CommandCreateAction> actions = new ArrayList<>(slash.alias().length + 1);
+      actions.add(jda.upsertCommand(slash.name(), slash.description()).addOptions(optionData));
+      slashMap.registerSlashData(slash.name(), slashData);
 
-        for (String alias : slash.alias()) {
-          actions.add(guild.upsertCommand(alias, slash.description()).addOptions(optionData));
-        }
-
-        for (CommandCreateAction action : actions) {
-          action.queue(command -> slashMap.registerSlashData(command.getName(), slashData));
-        }
+      for (String alias : slash.alias()) {
+        actions.add(jda.upsertCommand(alias, slash.description()).addOptions(optionData));
+        slashMap.registerSlashData(alias, slashData);
       }
     }
   }
