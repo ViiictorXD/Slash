@@ -10,19 +10,25 @@ import lombok.Getter;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.entities.channel.Channel;
+import net.dv8tion.jda.api.interactions.IntegrationType;
+import net.dv8tion.jda.api.interactions.InteractionContextType;
+import net.dv8tion.jda.api.interactions.commands.build.CommandData;
+import net.dv8tion.jda.api.interactions.commands.build.Commands;
 import net.dv8tion.jda.api.interactions.commands.build.OptionData;
-import net.dv8tion.jda.api.requests.restaction.CommandCreateAction;
+import net.dv8tion.jda.api.requests.restaction.CommandListUpdateAction;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 @Getter
 public class SlashFrame {
 
   private final JDA jda;
+  private final Logger logger;
 
   private final SlashMap slashMap;
   private final SlashAdapter slashAdapter;
@@ -32,6 +38,7 @@ public class SlashFrame {
 
   public SlashFrame(JDA jda) {
     this.jda = jda;
+    this.logger = Logger.getLogger("Slash");
 
     this.slashMap = new SlashMap();
     this.slashAdapter = new SlashAdapter();
@@ -74,14 +81,30 @@ public class SlashFrame {
        .map(SlashArgument::getData)
        .collect(Collectors.toList());
 
-      List<CommandCreateAction> actions = new ArrayList<>(slash.alias().length + 1);
-      actions.add(jda.upsertCommand(slash.name(), slash.description()).addOptions(optionData));
       slashMap.registerSlashData(slash.name(), slashData);
-
       for (String alias : slash.alias()) {
-        actions.add(jda.upsertCommand(alias, slash.description()).addOptions(optionData));
         slashMap.registerSlashData(alias, slashData);
       }
+
+      CommandListUpdateAction commands = jda.updateCommands();
+
+      commands.addCommands(
+       Commands.slash(slash.name(), slash.description())
+        .addOptions(optionData)
+        .setContexts(InteractionContextType.ALL)
+        .setIntegrationTypes(IntegrationType.ALL)
+      );
+
+      for (String alias : slash.alias()) {
+        commands.addCommands(
+         Commands.slash(alias, slash.description())
+          .addOptions(optionData)
+          .setContexts(InteractionContextType.ALL)
+          .setIntegrationTypes(IntegrationType.ALL)
+        );
+      }
+
+      commands.queue();
     }
   }
 

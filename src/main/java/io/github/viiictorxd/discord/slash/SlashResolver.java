@@ -50,7 +50,6 @@ public class SlashResolver {
   public void resolveSlash(SlashData slashData, SlashCommandInteractionEvent event) {
     SlashContext slashContext = new SlashContext(event);
 
-
     List<Object> parameters = new ArrayList<>(Collections.singletonList(slashContext));
 
     Object object = slashData.getObject();
