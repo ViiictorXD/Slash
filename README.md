@@ -14,7 +14,7 @@ Você pode adicionar o [JAR](https://github.com/ViiictorXD/Slash/releases) diret
    <dependency>
        <groupId>com.github.ViiictorXD</groupId>
        <artifactId>Slash</artifactId>
-       <version>1.0.0</version>
+       <version>1.0.4</version>
    </dependency>
    ```
 
@@ -23,7 +23,7 @@ Você pode adicionar o [JAR](https://github.com/ViiictorXD/Slash/releases) diret
    Se você estiver utilizando Gradle, adicione a dependência ao seu `build.gradle`:
 
    ```gradle
-   implementation 'com.github.ViiictorXD:Slash:1.0.0'
+   implementation 'com.github.ViiictorXD:Slash:1.0.4'
    ```
 
 ## Como Usar
@@ -43,8 +43,14 @@ Após instanciar o `SlashFrame`, você pode registrar um comando de barra (slash
 ```java
 slashFrame.registerSlash(new YourCommandClass());
 ```
+Após registrar todos os seus comandos, é necessário chamar o método `init()`
 
-Vale ressaltar que você pode criar quantos comandos quiser dentro de uma única classe!
+```java
+slashFrame.init();
+```
+Isso permite que você consiga adicionar, _caso queira_, comandos em tempo de execução!
+
+_Vale ressaltar que você pode criar quantos comandos quiser dentro de uma única classe!_
 
 ### Registrando um Adapter Customizado
 
