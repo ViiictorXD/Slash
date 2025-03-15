@@ -22,9 +22,7 @@ public class SlashResolver {
 
   private final SlashAdapter slashAdapter;
 
-  public List<SlashArgument> resolveArgument(SlashData slashData) {
-    Method method = slashData.getMethod();
-
+  public List<SlashArgument> resolveArgument(Method method) {
     List<Parameter> filteredParameters = Arrays.stream(method.getParameters())
      .filter(parameter -> parameter.isAnnotationPresent(Data.class))
      .collect(Collectors.toList());

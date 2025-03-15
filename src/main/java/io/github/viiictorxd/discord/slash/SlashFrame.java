@@ -10,25 +10,18 @@ import lombok.Getter;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.entities.channel.Channel;
-import net.dv8tion.jda.api.interactions.IntegrationType;
-import net.dv8tion.jda.api.interactions.InteractionContextType;
-import net.dv8tion.jda.api.interactions.commands.build.CommandData;
-import net.dv8tion.jda.api.interactions.commands.build.Commands;
 import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 import net.dv8tion.jda.api.requests.restaction.CommandListUpdateAction;
 
 import java.lang.reflect.Method;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 @Getter
 public class SlashFrame {
 
   private final JDA jda;
-  private final Logger logger;
 
   private final SlashMap slashMap;
   private final SlashAdapter slashAdapter;
@@ -36,9 +29,10 @@ public class SlashFrame {
   private final SlashResolver slashResolver;
   private final SlashMessageHolder slashMessageHolder;
 
+  private boolean registered;
+
   public SlashFrame(JDA jda) {
     this.jda = jda;
-    this.logger = Logger.getLogger("Slash");
 
     this.slashMap = new SlashMap();
     this.slashAdapter = new SlashAdapter();
@@ -51,14 +45,26 @@ public class SlashFrame {
     /* Registering default message holder */
     registerDefaultMessageHolder();
 
-    this.init();
-  }
-
-  private void init() {
-    jda.addEventListener(new SlashListener(slashMap, slashResolver, slashMessageHolder));
+    this.registered = false;
   }
 
   @SuppressWarnings("all")
+  public void init() {
+    if (!registered) {
+      jda.addEventListener(new SlashListener(slashMap, slashResolver, slashMessageHolder));
+    }
+
+    CommandListUpdateAction action = jda.updateCommands()
+     .addCommands(slashMap.values()
+      .stream()
+      .map(SlashData::asSlash)
+      .collect(Collectors.toList()));
+
+    action.queue();
+
+    this.registered = true;
+  }
+
   public void registerSlash(Object object) {
     Class<?> clazz = object.getClass();
 
@@ -73,38 +79,26 @@ public class SlashFrame {
         throw new SlashAlreadyRegisteredException(slash.name());
       }
 
-      SlashData slashData = SlashData.of(slash, method, object);
-
-      List<SlashArgument> slashArguments = slashResolver.resolveArgument(slashData);
+      List<SlashArgument> slashArguments = slashResolver.resolveArgument(method);
 
       List<OptionData> optionData = slashArguments.stream()
        .map(SlashArgument::getData)
        .collect(Collectors.toList());
 
+      SlashData slashData = SlashData.builder()
+       .name(slash.name())
+       .slash(slash)
+       .method(method)
+       .object(object)
+       .optionData(optionData)
+       .build();
+
       slashMap.registerSlashData(slash.name(), slashData);
       for (String alias : slash.alias()) {
+        slashData.setName(alias);
+
         slashMap.registerSlashData(alias, slashData);
       }
-
-      CommandListUpdateAction commands = jda.updateCommands();
-
-      commands.addCommands(
-       Commands.slash(slash.name(), slash.description())
-        .addOptions(optionData)
-        .setContexts(InteractionContextType.ALL)
-        .setIntegrationTypes(IntegrationType.ALL)
-      );
-
-      for (String alias : slash.alias()) {
-        commands.addCommands(
-         Commands.slash(alias, slash.description())
-          .addOptions(optionData)
-          .setContexts(InteractionContextType.ALL)
-          .setIntegrationTypes(IntegrationType.ALL)
-        );
-      }
-
-      commands.queue();
     }
   }
 
