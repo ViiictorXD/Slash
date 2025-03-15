@@ -127,6 +127,8 @@ public class SlashFrame {
   }
 
   private void registerDefaultMessageHolder() {
-    slashMessageHolder.put(SlashMessageHolder.Type.NO_PERMISSION, event -> event.reply(":x: Sem permissão.").queue());
+    slashMessageHolder.put(SlashMessageHolder.Type.NO_PERMISSION, event -> event.reply(":x: Sem permissão.")
+     .setEphemeral(true)
+     .queue());
   }
 }
