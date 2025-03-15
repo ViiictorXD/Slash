@@ -17,5 +17,5 @@ public @interface Slash {
 
   String[] alias() default { };
 
-  Permission permission() default Permission.UNKNOWN;
+  Permission[] permission() default { Permission.UNKNOWN };
 }

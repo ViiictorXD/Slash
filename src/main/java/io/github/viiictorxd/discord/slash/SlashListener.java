@@ -26,8 +26,7 @@ public class SlashListener extends ListenerAdapter {
     Slash slash = slashData.getSlash();
 
     Member member = event.getMember();
-    if (member == null
-     || (!member.isOwner() && (slash.permission() != Permission.UNKNOWN && !member.hasPermission(slash.permission()))))
+    if (member == null || (!member.isOwner() && !member.hasPermission(slash.permission())))
       return;
 
     slashResolver.resolveSlash(slashData, event);
