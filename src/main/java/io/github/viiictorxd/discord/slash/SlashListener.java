@@ -3,7 +3,6 @@ package io.github.viiictorxd.discord.slash;
 import io.github.viiictorxd.discord.slash.annotation.Slash;
 import io.github.viiictorxd.discord.slash.message.SlashMessageHolder;
 import lombok.RequiredArgsConstructor;
-import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;

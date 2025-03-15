@@ -103,7 +103,7 @@ public class SlashFrame {
     slashAdapter.registerTypeAdapter(clazz, adapter);
   }
 
-  public void registerDefaultTypeAdapters() {
+  private void registerDefaultTypeAdapters() {
     slashAdapter.registerTypeAdapter(Message.Attachment.class, new AttachmentTypeAdapter());
     slashAdapter.registerTypeAdapter(Channel.class, new ChannelTypeAdapter());
     slashAdapter.registerTypeAdapter(Member.class, new MemberTypeAdapter());
